@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ramonuribe.supportportal.constant.SecurityConstant;
 import com.ramonuribe.supportportal.domain.HttpResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,21 +17,18 @@ import java.io.OutputStream;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
-public class JwtAuthenticationEntryPoint extends Http403ForbiddenEntryPoint {
-
+public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     @Override
-    // Creating custom http response
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
-        HttpResponse httpResponse = new HttpResponse(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN,
-                HttpStatus.FORBIDDEN.getReasonPhrase().toUpperCase(),
-                SecurityConstant.FORBIDDEN_MESSAGE);
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
+        HttpResponse httpResponse = new HttpResponse(HttpStatus.UNAUTHORIZED.value(), HttpStatus.FORBIDDEN,
+                HttpStatus.UNAUTHORIZED.getReasonPhrase().toUpperCase(),
+                SecurityConstant.ACCESS_DENIED_MESSAGE);
 
         response.setContentType(APPLICATION_JSON_VALUE);
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         OutputStream outputStream = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(outputStream, httpResponse);
         outputStream.flush();
     }
-
 }
