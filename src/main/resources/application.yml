@@ -1,3 +1,6 @@
+jwt:
+  secret: 'donotwritesomethinglikethisinproduction'
+
 spring:
   jpa:
     show-sql: true
