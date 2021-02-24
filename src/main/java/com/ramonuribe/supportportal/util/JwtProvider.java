@@ -24,7 +24,7 @@ import static com.ramonuribe.supportportal.constant.SecurityConstant.*;
 import static java.util.Arrays.stream;
 
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
 
     // Value retrieved from application.yml file
     @Value("${jwt.secret}")
@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     public String generateJwtToken(UserPrincipal userPrincipal) {
         // Getting claims using a helper method
         String[] claims = getClaimsFromUser(userPrincipal);
-        // Creating JWT Tokens
+        // Creating JWT Token
         return JWT.create().withIssuer(SOME_COMPANY).withAudience(SOME_COMPANY_ADMINISTRATION)
                 .withIssuedAt(new Date()).withSubject(userPrincipal.getUsername())
                 .withArrayClaim(AUTHORITIES, claims).withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
